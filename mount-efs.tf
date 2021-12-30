@@ -2,19 +2,19 @@
 resource "aws_efs_file_system" "efs_volume" {
   creation_token   = "EFS Shared Data"
   performance_mode = "generalPurpose"
-  encrypted = "true"
-tags = {
+  encrypted        = "true"
+  tags = {
     Name = "EFS Shared Data"
   }
 }
 
 resource "aws_efs_mount_target" "efs" {
-  depends_on = [ aws_efs_file_system.efs_volume, ]
+  depends_on      = [aws_efs_file_system.efs_volume, ]
   file_system_id  = aws_efs_file_system.efs_volume.id
-  count = length(var.azs)
+  count           = length(var.azs)
   subnet_id       = aws_subnet.private_application[count.index].id
   security_groups = [aws_security_group.ec2_security_group.id]
-#   security_groups = "${var.security_groups}"
+  #   security_groups = "${var.security_groups}"
 }
 
 # data "template_file" "script" {
@@ -43,12 +43,12 @@ resource "aws_efs_access_point" "access-point" {
 #aws_instance.ec2_private_application, 
 resource "null_resource" "configure_nfs" {
   depends_on = [aws_efs_access_point.access-point, aws_efs_mount_target.efs]
-  count = length(var.azs)
+  count      = length(var.azs)
   connection {
-    type     = "ssh"
-    user     = "ec2-user"
+    type        = "ssh"
+    user        = "ec2-user"
     private_key = tls_private_key.example.private_key_pem
-    host     = aws_instance.ec2_private_application_server[count.index].public_ip
+    host        = aws_instance.ec2_private_application_server[count.index].public_ip
   }
   provisioner "remote-exec" {
     inline = [
@@ -65,10 +65,10 @@ resource "null_resource" "configure_nfs" {
       "ls -la",
       "sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ${aws_efs_file_system.efs_volume.dns_name}:/ mount-point",
       "ls",
-      "sudo chown -R ubuntu.ubuntu mount-point",      
+      "sudo chown -R ubuntu.ubuntu mount-point",
       "cd mount-point",
       "ls",
-      "mkdir access",      
+      "mkdir access",
       "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1",
       "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2",
       "printf '2\n' | sudo update-alternatives --config python3",

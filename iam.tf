@@ -143,8 +143,8 @@ resource "aws_iam_policy" "admin_policy" {
       {
         "Sid" : "VisualEditor",
         "Effect" : "Allow",
-        "Action": "*",
-        "Resource": "*"
+        "Action" : "*",
+        "Resource" : "*"
       }
     ]
   })

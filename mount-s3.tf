@@ -5,9 +5,9 @@ resource "aws_s3_bucket" "tfs3bucket" {
   acl    = "public-read-write"
 }
 
-  module "launch-template_example_s3fs" {
-  source  = "figurate/launch-template/aws//examples/s3fs"
-  version = "1.0.3"
+module "launch-template_example_s3fs" {
+  source               = "figurate/launch-template/aws//examples/s3fs"
+  version              = "1.0.3"
   iam_instance_profile = aws_iam_instance_profile.some_profile.id
   # buckets = ["hh","my-tf-test-bucket"]
   # image = var.webservers_ami
