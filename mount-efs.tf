@@ -13,7 +13,7 @@ resource "aws_efs_mount_target" "efs" {
   file_system_id  = aws_efs_file_system.efs_volume.id
   count           = length(var.azs)
   subnet_id       = aws_subnet.private_application[count.index].id
-  security_groups = [aws_security_group.ec2_security_group.id]
+  security_groups = [aws_security_group.ec2_sg.id]
   #   security_groups = "${var.security_groups}"
 }
 
