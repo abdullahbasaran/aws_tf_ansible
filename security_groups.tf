@@ -43,7 +43,7 @@ resource "aws_security_group" "ec2_sg" {
 
 resource "aws_security_group" "efs" {
   name        = "efs-sg"
-  description = "Allos inbound efs traffic from ec2"
+  description = "Allow inbound efs traffic from ec2"
   vpc_id      = aws_vpc.my_vpc.id
 
   ingress {
@@ -66,6 +66,31 @@ resource "aws_security_group" "efs" {
 
 resource "aws_security_group" "web_application" {
   name        = "efs-sg"
+  vpc_id      = aws_vpc.my_vpc.id
+
+  ingress {
+    description = "web"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.public_subnets_cidrs[0],var.public_subnets_cidrs[1]]
+  }
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "main" {
+  name        = "efs-sg"
   description = "Allos inbound efs traffic from ec2"
   vpc_id      = aws_vpc.my_vpc.id
 
@@ -74,7 +99,7 @@ resource "aws_security_group" "web_application" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [var.public_subnets_cidrs]
+    cidr_blocks = [var.public_subnets_cidrs[0],var.public_subnets_cidrs[1]]
   }
   egress {
     from_port   = 443

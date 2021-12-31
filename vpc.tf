@@ -81,10 +81,10 @@ resource "aws_subnet" "public_web" {
 
 # Create the private subnets
 resource "aws_subnet" "private_application" {
-  count = length(var.public_subnets_cidrs)
+  count = length(var.private_subnets_cidrs)
 
   vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = var.public_subnets_cidrs[count.index]
+  cidr_block              = var.private_subnets_cidrs[count.index]
   availability_zone       = "${var.aws_region}${var.azs[count.index]}"
   map_public_ip_on_launch = false
 
@@ -94,7 +94,7 @@ resource "aws_subnet" "private_application" {
 }
 
 resource "aws_subnet" "private_dbms" {
-  count = length(var.public_subnets_cidrs)
+  count = length(var.private_subnets_cidrs2)
 
   vpc_id                  = aws_vpc.my_vpc.id
   cidr_block              = var.private_subnets_cidrs2[count.index]
@@ -102,6 +102,6 @@ resource "aws_subnet" "private_dbms" {
   map_public_ip_on_launch = false
 
   tags = {
-    # Name = "${var.vpc_name}-private-dbms-${var.azs[count.index]}"
+    Name = "${var.vpc_name}-private-dbms-${var.azs[count.index]}"
   }
 }
